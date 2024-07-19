@@ -15,34 +15,32 @@ export function SignMessage() {
   const { passportState } = useContext(PassportContext);
   const { wagmiConnector } = passportState;
 
-  const handleSignMessage = () => {
+  const handleSignMessage = async () => {
     if (!wagmiConnector) {
       console.error('Cannot sign message - Immutable Passport wagmi connector not found', wagmiConnector);
       return false;
     }  
 
-    (async() => {
-      setIsSigning(true);
-      setMessageVerificationComplete(false);
-      
-      // Ensure the user is connected to the wagmi connector before signing
-      const isConnected = await handleUserConnection(wagmiConnector);
-      if (!isConnected) {
-        setIsSigning(false);
-        return;
-      }
+    setIsSigning(true);
+    setMessageVerificationComplete(false);
+    
+    // Ensure the user is connected to the wagmi connector before signing
+    const isConnected = await handleUserConnection(wagmiConnector);
+    if (!isConnected) {
+      setIsSigning(false);
+      return;
+    }
 
-      try {
-        signMessage({
-          message,
-          connector: wagmiConnector,
-          account: address,
-        });
-      } catch (error) {
-        console.error('Error signing message:', error);
-        setIsSigning(false);
-      }
-    })();
+    try {
+      signMessage({
+        message,
+        connector: wagmiConnector,
+        account: address,
+      });
+    } catch (error) {
+      console.error('Error signing message:', error);
+      setIsSigning(false);
+    }
   };
 
   useEffect(() => {
@@ -57,7 +55,6 @@ export function SignMessage() {
         setVerifiedMessage(verified);
         setMessageVerificationComplete(true);
       })();
-
     }
   }, [data]);
 
