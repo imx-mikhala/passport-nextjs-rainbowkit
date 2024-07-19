@@ -1,13 +1,14 @@
 import { BiomeCombinedProviders, Box, Heading } from "@biom3/react";
 import { RainbowConnect } from "./RainbowConnect";
 import { useContext, useEffect } from "react";
-import { PassportActions, PassportContext, passportReducer } from "./Context/PassportContext";
+import { PassportActions, PassportContext } from "./Context/PassportContext";
+import { getWagmiConfig, PASSPORT_WAGMI_CONNECTOR_NAME } from "./wagmi";
 
 export default function Home() {
   const { passportState, passportDispatch } = useContext(PassportContext);
   const {
     passport,
-    provider,
+    wagmiConnector,
   } = passportState;
 
   useEffect(() => {
@@ -16,19 +17,30 @@ export default function Home() {
       return;
     }
 
-    if (provider) {
+    // Injects Passport into RainbowKit
+    passport.connectEvm();
+  }, [passport]);
+
+  useEffect(() => {
+    if (wagmiConnector) {
       return;
     }
 
-    // Injects Passport into RainbowKit
-    const zkEvmProvider = passport.connectEvm();
+    const connectors = getWagmiConfig().connectors.map((connector) => ({ ...connector }));
+    const passportConnector = connectors.find((connector) => connector.name === PASSPORT_WAGMI_CONNECTOR_NAME);
+
+    if (!passportConnector) {
+      console.log('No wagmi connector for Passport found');
+      return;
+    }
+
     passportDispatch({ 
       payload: { 
-        type: PassportActions.SET_PROVIDER,
-        provider: zkEvmProvider
+        type: PassportActions.SET_WAGMI_CONNECTOR,
+        wagmiConnector: passportConnector,
       } 
     });
-  }, [passport, provider]);
+  }, [wagmiConnector]);
 
   return (
     <BiomeCombinedProviders>

@@ -1,7 +1,7 @@
 import type { AppProps } from "next/app";
 import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider, type Locale } from '@rainbow-me/rainbowkit';
-import { getConfig } from './wagmi';
+import { getWagmiConfig } from './wagmi';
 import { useRouter } from "next/router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Environment, ImmutableConfiguration } from "@imtbl/sdk/config";
@@ -28,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
   );
 
   return (
-    <WagmiProvider config={getConfig()}>
+    <WagmiProvider config={getWagmiConfig()}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider locale={locale} >
         <PassportContext.Provider value={passportReducerValues}>

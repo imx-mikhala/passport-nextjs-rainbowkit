@@ -1,17 +1,16 @@
 import { Passport } from '@imtbl/sdk/passport';
 import { createContext } from 'react';
+import { Connector } from 'wagmi';
 
 export interface PassportState {
   passport: Passport | null;
-  provider: any | null;
-  walletAddress: string;
+  wagmiConnector: Connector | null;
 }
 
 export const initialisePassportState = (passport: Passport) => {
   return {
     passport,
-    provider: null,
-    walletAddress: "",
+    wagmiConnector: null,
   }
 }
 
@@ -26,13 +25,11 @@ export interface PassportAction {
 
 type ActionPayload =
   | SetPassport
-  | SetProvider
-  | SetWalletAddress;
+  | SetWagmiConnector;
 
 export enum PassportActions {
   SET_PASSPORT = 'SET_PASSPORT',
-  SET_PROVIDER = 'SET_PROVIDER',
-  SET_WALLET_ADDRESS = 'SET_WALLET_ADDRESS',
+  SET_WAGMI_CONNECTOR = 'SET_WAGMI_CONNECTOR',
 }
 
 export type SetPassport = {
@@ -40,21 +37,15 @@ export type SetPassport = {
   passport: Passport;
 }
 
-export type SetProvider = {
-  type: PassportActions.SET_PROVIDER;
-  provider: any;
-}
-
-export type SetWalletAddress = {
-  type: PassportActions.SET_WALLET_ADDRESS;
-  walletAddress: string;
+export type SetWagmiConnector = {
+  type: PassportActions.SET_WAGMI_CONNECTOR;
+  wagmiConnector: Connector;
 }
 
 export const PassportContext = createContext<PassportContextState>({
   passportState: {
     passport: null,
-    provider: null,
-    walletAddress: "",
+    wagmiConnector: null,
   },
   passportDispatch: () => {},
 });
@@ -73,15 +64,10 @@ export const passportReducer: Reducer<PassportState, PassportAction> = (
         ...state,
         passport: action.payload.passport,
       };
-    case PassportActions.SET_PROVIDER:
+    case PassportActions.SET_WAGMI_CONNECTOR:
       return {
         ...state,
-        provider: action.payload.provider,
-      };
-    case PassportActions.SET_WALLET_ADDRESS:
-      return {
-        ...state,
-        walletAddress: action.payload.walletAddress,
+        wagmiConnector: action.payload.wagmiConnector,
       };
     default:
       return state;
